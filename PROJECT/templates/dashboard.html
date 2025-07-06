@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard Suite - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --background-color: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --text-color: #2d3748;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --muted-text: #718096;
+            --success-color: #48bb78;
+            --warning-color: #ed8936;
+            --error-color: #f56565;
+            --info-color: #4299e1;
+        }
+
+        .dark {
+            --background-color: #1a202c;
+            --sidebar-bg: #2d3748;
+            --text-color: #f7fafc;
+            --border-color: #4a5568;
+            --card-bg: #2d3748;
+            --muted-text: #a0aec0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-layout {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar.collapsed {
+            width: 60px;
+        }
+
+        .sidebar.collapsed .sidebar-header h2,
+        .sidebar.collapsed .sidebar-header .subtitle,
+        .sidebar.collapsed .sidebar-menu button span,
+        .sidebar.collapsed .sidebar-menu a span,
+        .sidebar.collapsed .sidebar-footer span {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-menu button,
+        .sidebar.collapsed .sidebar-menu a {
+            justify-content: center;
+            padding: 0.75rem;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-header .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .sidebar-header .subtitle {
+            font-size: 0.75rem;
+            color: var(--muted-text);
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-menu button {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            border-radius: 0.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-menu button:hover {
+            background: var(--border-color);
+        }
+
+        .sidebar-menu button.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .sidebar-menu a {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            border-radius: 0.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .sidebar-menu a:hover {
+            background: var(--border-color);
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--muted-text);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            height: 4rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--border-color);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--border-color);
+        }
+
+        .content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: var(--muted-text);
+            font-size: 0.875rem;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+        }
+
+        .welcome-card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .wave-emoji {
+            animation: wave 2s infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(20deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stat-icon {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+        }
+
+        .stat-content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-content p {
+            font-size: 0.875rem;
+            color: var(--muted-text);
+        }
+
+        /* Image Carousel */
+        .image-carousel {
+            position: relative;
+            height: 16rem;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .carousel-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .carousel-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+        }
+
+        .carousel-content {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            color: white;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .carousel-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .carousel-dot.active {
+            background: white;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 6rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--border-color);
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Educational Content */
+        .education-section {
+            margin-bottom: 2rem;
+        }
+
+        .feature-explanation {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-highlight {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .highlight-blue {
+            background: rgba(102, 126, 234, 0.1);
+            color: #3c4fe0;
+        }
+
+        .highlight-green {
+            background: rgba(72, 187, 120, 0.1);
+            color: #2f855a;
+        }
+
+        .highlight-orange {
+            background: rgba(237, 137, 54, 0.1);
+            color: #c05621;
+        }
+
+        .highlight-purple {
+            background: rgba(128, 90, 213, 0.1);
+            color: #6b46c1;
+        }
+
+        .highlight-indigo {
+            background: rgba(102, 126, 234, 0.1);
+            color: #5a67d8;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .feature-list li {
+            padding: 0.25rem 0;
+            padding-left: 1rem;
+            position: relative;
+            font-size: 0.875rem;
+            color: var(--muted-text);
+        }
+
+        .feature-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .quiz-question {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+        }
+
+        .quiz-question h4 {
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .quiz-option {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .quiz-option:hover {
+            background: var(--border-color);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary-color);
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success-color);
+            background: rgba(72, 187, 120, 0.1);
+            color: var(--success-color);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--error-color);
+            background: rgba(245, 101, 101, 0.1);
+            color: var(--error-color);
+        }
+
+        .quiz-explanation {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #3c4fe0;
+        }
+
+        .quiz-results {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .quiz-score {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: var(--border-color);
+            border-radius: 0.25rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.5s ease;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: -100%;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+    </style>
+</head>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h2>CyberGuard</h2>
+                        <p class="subtitle">Security Suite</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <ul>
+                    <li><button class="menu-item active" data-section="dashboard"><i class="fas fa-home"></i> <span>Dashboard</span></button></li>
+                    <li><button class="menu-item" data-section="scan-url"><i class="fas fa-search"></i> <span>Scan URL</span></button></li>
+                    <li><button class="menu-item" data-section="email-analyzer"><i class="fas fa-envelope"></i> <span>Email Analyzer</span></button></li>
+                    <li><button class="menu-item" data-section="fake-login"><i class="fas fa-eye"></i> <span>Fake Login Detector</span></button></li>
+                    <li><button class="menu-item" data-section="encryption"><i class="fas fa-lock"></i> <span>Encryption Tool</span></button></li>
+                    <li><button class="menu-item" data-section="education"><i class="fas fa-graduation-cap"></i> <span>Security Education</span></button></li>
+                    <li><button class="menu-item" data-section="security-question"><i class="fas fa-cog"></i> <span>Security Question</span></button></li>
+                    <li><button class="menu-item" data-section="profile"><i class="fas fa-user"></i> <span>Profile</span></button></li>
+                    <li><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <i class="fas fa-user"></i>
+                <span>Logged in as {{ username }}</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+
+            <div class="content">
+                <!-- Dashboard Section -->
+                <div class="content-section active" id="dashboard-section">
+                    <!-- Welcome Card -->
+                    <div class="card welcome-card">
+                        <h2>Welcome, {{ username }}! <span class="wave-emoji">👋</span></h2>
+                        <p style="color: rgba(255, 255, 255, 0.8); margin-top: 0.5rem;">Your comprehensive cybersecurity dashboard is ready</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="card stat-card">
+                            <div class="stat-icon" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p>Security Score</p>
+                                <h3>{{ security_score }}%</h3>
+                            </div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="stat-icon" style="background: rgba(66, 153, 225, 0.2); color: #4299e1;">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p>Scans Today</p>
+                                <h3>{{ scans_today }}</h3>
+                            </div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="stat-icon" style="background: rgba(237, 137, 54, 0.2); color: #ed8936;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p>Threats Blocked</p>
+                                <h3>{{ threats_blocked }}</h3>
+                            </div>
+                        </div>
+                        <div class="card stat-card">
+                            <div class="stat-icon" style="background: rgba(72, 187, 120, 0.2); color: #48bb78;">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p>System Status</p>
+                                <h3 style="color: #48bb78;">Secure</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Carousel -->
+                    <div class="card" style="padding: 0;">
+                        <div class="image-carousel">
+                            <img class="carousel-image" id="carouselImage" src="https://images.unsplash.com/photo-1563206767-5b18f218e8de?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80" alt="Security Image">
+                            <div class="carousel-overlay"></div>
+                            <div class="carousel-content">
+                                <h3 id="carouselTitle">Advanced Threat Detection</h3>
+                                <p id="carouselDescription">Protect your digital assets with AI-powered security analysis</p>
+                            </div>
+                            <div class="carousel-indicators">
+                                <div class="carousel-dot active"></div>
+                                <div class="carousel-dot"></div>
+                                <div class="carousel-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terms of Use -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-file-text"></i> Terms of Use & Guidelines</h3>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                            <div>
+                                <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-shield-alt" style="color: var(--primary-color);"></i>
+                                    Data Protection
+                                </h4>
+                                <p style="font-size: 0.875rem; color: var(--muted-text);">
+                                    All your data is encrypted and stored securely. We never share your information with third parties.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-globe" style="color: #48bb78;"></i>
+                                    Responsible Usage
+                                </h4>
+                                <p style="font-size: 0.875rem; color: var(--muted-text);">
+                                    Use our tools ethically and in compliance with local laws and regulations.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-clock" style="color: #ed8936;"></i>
+                                    Service Availability
+                                </h4>
+                                <p style="font-size: 0.875rem; color: var(--muted-text);">
+                                    Our services are available 24/7 with 99.9% uptime guarantee.
+                                </p>
+                            </div>
+                            <div>
+                                <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-award" style="color: #805ad5;"></i>
+                                    Quality Assurance
+                                </h4>
+                                <p style="font-size: 0.875rem; color: var(--muted-text);">
+                                    Regular updates and improvements ensure the highest security standards.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- URL Scanner Section -->
+                <div class="content-section" id="scan-url-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-search"></i> URL Security Scanner</h3>
+                            <p class="card-description">Analyze URLs for potential security threats and malicious content</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="url-input">Enter URL to scan</label>
+                            <input type="url" class="form-input" id="url-input" placeholder="https://example.com">
+                        </div>
+                        <button class="btn btn-primary btn-full">
+                            <i class="fas fa-search"></i>
+                            Scan URL
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Email Analyzer Section -->
+                <div class="content-section {% if active_section == 'email-analyzer' %}active{% endif %}" id="email-analyzer-section">
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title"><i class="fas fa-envelope-open-text"></i> Email Security Analyzer</h3>
+                      <p class="card-description">Analyze email headers and content for phishing attempts</p>
+                    </div>
+
+                    <div class="card-body">
+                    <form method="POST" action="{{ url_for('auth.email_analyzer') }}">
+                        <div class="form-group">
+                          <label for="email_content">Paste email headers or body</label>
+                          <textarea name="email_content" id="email_content" class="form-input" rows="10" placeholder="Paste here..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">
+                          <i class="fas fa-search"></i> Analyze Email
+                        </button>
+                      </form>
+
+                      {% if analysis %}
+                        <div class="analysis-result mt-4">
+                          <h4>Analysis Result:</h4>
+                          <ul>
+                            {% for item in analysis %}
+                              <li>{{ item }}</li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      {% endif %}
+                    </div> <!-- /.card-body -->
+                  </div> <!-- /.card -->
+                </div> <!-- /#email-analyzer-section -->
+
+                <!-- Fake Login Detector Section -->
+                <div class="content-section" id="fake-login-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-eye"></i> Fake Login Detector</h3>
+                            <p class="card-description">Detect suspicious login pages and phishing attempts</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="login-url">Login page URL</label>
+                            <input type="url" class="form-input" id="login-url" placeholder="https://suspicious-site.com/login">
+                        </div>
+                        <button class="btn btn-primary btn-full" id="check-login-btn">
+                            <i class="fas fa-eye"></i>
+                            Check Login Page
+                        </button>
+                        <div id="detection-results" class="mt-3" style="display: none;">
+                            <div class="alert" id="result-alert">
+                                <h4 id="result-title"></h4>
+                                <div id="result-details"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Encryption Section -->
+                <div class="content-section" id="encryption-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-lock"></i> Encryption Tool</h3>
+                            <p class="card-description">Encrypt and decrypt sensitive text data, documents, and images</p>
+                        </div>
+                        
+                        <form method="POST" action="{{ url_for('auth.encrypt_tool') }}" enctype="multipart/form-data">
+                           
+                            <div class="form-group">
+                                <label class="form-label" for="file-input">Upload a file to encrypt</label>
+                                <input type="file" class="form-input" id="file-input" name="file-input"
+                                       accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.rtf,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.svg"
+                                       style="padding: 0.5rem;">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="encryption-key">Encryption key</label>
+                                <input type="password" class="form-input" id="encryption-key" name="encryption-key" placeholder="Enter encryption key" required>
+                            </div>
+                            
+                            <div style="background: rgba(102, 126, 234, 0.1); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                                <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #3c4fe0;">
+                                    <i class="fas fa-file-alt" style="margin-right: 0.5rem;"></i>
+                                    Supported File Types
+                                </h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; font-size: 0.8rem;">
+                                    <div>
+                                        <strong>Documents:</strong>
+                                        <ul style="margin: 0.25rem 0 0 1rem; list-style: none;">
+                                            <li>• PDF files</li>
+                                            <li>• Word documents (.doc, .docx)</li>
+                                            <li>• PowerPoint presentations (.ppt, .pptx)</li>
+                                            <li>• Excel spreadsheets (.xls, .xlsx)</li>
+                                            <li>• Text files (.txt, .rtf)</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>Images:</strong>
+                                        <ul style="margin: 0.25rem 0 0 1rem; list-style: none;">
+                                            <li>• JPEG/JPG images</li>
+                                            <li>• PNG images</li>
+                                            <li>• GIF images</li>
+                                            <li>• BMP images</li>
+                                            <li>• TIFF images</li>
+                                            <li>• SVG vector graphics</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <p style="margin-top: 0.75rem; font-size: 0.75rem; color: #5a67d8; font-style: italic;">
+                                    <i class="fas fa-info-circle" style="margin-right: 0.25rem;"></i>
+                                    All file types are processed with military-grade AES-256 encryption for maximum security
+                                </p>
+                            </div>
+                            
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="submit" class="btn btn-primary" style="flex: 1;" id="upload-encrypt-btn">
+                                    <i class="fas fa-upload"></i>
+                                    Encrypt
+                                </button>
+                                <button type="button" class="btn btn-outline" style="flex: 1;" id="decrypt-btn">
+                                    <i class="fas fa-key"></i>
+                                    Decrypt
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Security Education Section -->
+                <div class="content-section" id="education-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-graduation-cap"></i> Security Education Center</h3>
+                            <p class="card-description">Master cybersecurity with comprehensive learning modules</p>
+                        </div>
+                    </div>
+
+                    <!-- URL Scanner Education -->
+                    <div class="feature-explanation">
+                        <div class="card-header">
+                            <h3 class="card-title" style="color: var(--primary-color);"><i class="fas fa-search"></i> URL Security Scanning</h3>
+                        </div>
+                        <div class="feature-highlight highlight-blue">
+                            URL scanning is a critical first line of defense in cybersecurity. It analyzes web addresses before you visit them to identify potential threats and protect you from malicious websites.
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">How It Works</h4>
+                            <ul class="feature-list">
+                                <li>Checks URLs against databases of known malicious sites</li>
+                                <li>Analyzes domain reputation, age, and registration details</li>
+                                <li>Scans for suspicious redirects and hidden content</li>
+                                <li>Detects phishing patterns and social engineering attempts</li>
+                                <li>Examines page content for malicious scripts and exploits</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Key Advantages</h4>
+                            <ul class="feature-list">
+                                <li>Prevents malware downloads and infections</li>
+                                <li>Blocks phishing attempts that steal credentials</li>
+                                <li>Identifies compromised legitimate websites</li>
+                                <li>Protects personal and financial information</li>
+                                <li>Reduces risk of ransomware attacks</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Best Practices</h4>
+                            <ul class="feature-list">
+                                <li>Always scan shortened URLs before clicking</li>
+                                <li>Be cautious of links received via email or messaging</li>
+                                <li>Verify website security certificates (look for HTTPS)</li>
+                                <li>Use browser extensions that provide URL safety ratings</li>
+                                <li>Keep your URL scanning tools updated for latest threat detection</li>
+                            </ul>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="badge" style="background: rgba(102, 126, 234, 0.1); color: var(--primary-color);">Essential Security Tool</span>
+                        </div>
+                    </div>
+
+                    <!-- Email Analyzer Education -->
+                    <div class="feature-explanation">
+                        <div class="card-header">
+                            <h3 class="card-title" style="color: #48bb78;"><i class="fas fa-envelope"></i> Email Security Analysis</h3>
+                        </div>
+                        <div class="feature-highlight highlight-green">
+                            Email analysis examines headers, content, and attachments to detect phishing, spam, and malicious content. It's your defense against the most common attack vector used by cybercriminals.
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">How It Works</h4>
+                            <ul class="feature-list">
+                                <li>Analyzes email headers to verify sender authenticity</li>
+                                <li>Scans attachments for malware and suspicious code</li>
+                                <li>Examines links embedded in emails for safety</li>
+                                <li>Detects social engineering tactics and phishing language</li>
+                                <li>Checks for spoofed domains and sender impersonation</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Key Advantages</h4>
+                            <ul class="feature-list">
+                                <li>Prevents credential theft through phishing</li>
+                                <li>Blocks malware delivery via attachments</li>
+                                <li>Reduces risk of business email compromise (BEC) fraud</li>
+                                <li>Identifies targeted spear-phishing attempts</li>
+                                <li>Protects against ransomware distributed via email</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Best Practices</h4>
+                            <ul class="feature-list">
+                                <li>Verify unexpected emails from known contacts through another channel</li>
+                                <li>Never open attachments from unknown senders</li>
+                                <li>Check for grammar errors and urgent language (phishing red flags)</li>
+                                <li>Hover over links to preview URLs before clicking</li>
+                                <li>Use email analysis tools for suspicious messages</li>
+                            </ul>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="badge" style="background: rgba(72, 187, 120, 0.1); color: #48bb78;">Communication Security</span>
+                        </div>
+                    </div>
+
+                    <!-- Fake Login Detector Education -->
+                    <div class="feature-explanation">
+                        <div class="card-header">
+                            <h3 class="card-title" style="color: #ed8936;"><i class="fas fa-eye"></i> Fake Login Detection</h3>
+                        </div>
+                        <div class="feature-highlight highlight-orange">
+                            Fake login detection identifies fraudulent login pages designed to steal credentials. These sophisticated phishing pages often look identical to legitimate sites but exist to harvest your passwords.
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">How It Works</h4>
+                            <ul class="feature-list">
+                                <li>Compares login page visual elements with legitimate sites</li>
+                                <li>Analyzes URL structure and domain authenticity</li>
+                                <li>Checks SSL certificate validity and details</li>
+                                <li>Examines page code for credential-stealing scripts</li>
+                                <li>Detects redirects and form submission destinations</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Key Advantages</h4>
+                            <ul class="feature-list">
+                                <li>Prevents credential theft and account takeovers</li>
+                                <li>Protects financial accounts and sensitive information</li>
+                                <li>Identifies sophisticated phishing attempts</li>
+                                <li>Reduces risk of identity theft</li>
+                                <li>Alerts you to newly created phishing sites</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Best Practices</h4>
+                            <ul class="feature-list">
+                                <li>Always check the URL before entering credentials</li>
+                                <li>Use bookmarks for important login pages instead of following links</li>
+                                <li>Enable two-factor authentication on all accounts</li>
+                                <li>Verify site security certificates (look for the lock icon)</li>
+                                <li>Use the fake login detector before entering credentials on suspicious sites</li>
+                            </ul>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="badge" style="background: rgba(237, 137, 54, 0.1); color: #ed8936;">Identity Protection</span>
+                        </div>
+                    </div>
+
+                    <!-- Text Encryption Education -->
+                    <div class="feature-explanation">
+                        <div class="card-header">
+                            <h3 class="card-title" style="color: #805ad5;"><i class="fas fa-lock"></i> Text Encryption</h3>
+                        </div>
+                        <div class="feature-highlight highlight-purple">
+                            Our advanced encryption tool protects sensitive information including text, documents (PDF, Word, PowerPoint, Excel), and images of all formats by converting them into an encrypted format using military-grade algorithms. Only those with the correct decryption key can access the original content.
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">How It Works</h4>
+                            <ul class="feature-list">
+                                <li>Uses mathematical algorithms to scramble text, documents, and images</li>
+                                <li>Requires a unique key for encryption and decryption</li>
+                                <li>Transforms readable text into seemingly random characters</li>
+                                <li>Implements industry-standard encryption protocols (AES-256)</li>
+                                <li>Provides end-to-end protection for sensitive information</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Key Advantages</h4>
+                            <ul class="feature-list">
+                                <li>Ensures confidentiality of sensitive communications</li>
+                                <li>Protects personal data from unauthorized access</li>
+                                <li>Secures financial information and credentials</li>
+                                <li>Maintains privacy when sharing sensitive information</li>
+                                <li>Prevents data breaches during transmission</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Best Practices</h4>
+                            <ul class="feature-list">
+                                <li>Use strong, unique encryption keys</li>
+                                <li>Never share encryption keys through insecure channels</li>
+                                <li>Encrypt all sensitive personal and financial information</li>
+                                <li>Use different encryption keys for different types of data</li>
+                                <li>Regularly update encryption methods to maintain security</li>
+                            </ul>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="badge" style="background: rgba(128, 90, 213, 0.1); color: #805ad5;">Data Protection</span>
+                        </div>
+                    </div>
+
+                    <!-- Security Questions Education -->
+                    <div class="feature-explanation">
+                        <div class="card-header">
+                            <h3 class="card-title" style="color: #5a67d8;"><i class="fas fa-cog"></i> Security Questions</h3>
+                        </div>
+                        <div class="feature-highlight highlight-indigo">
+                            Security questions provide an additional layer of account protection and recovery options. They serve as a secondary verification method when resetting passwords or recovering account access.
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">How It Works</h4>
+                            <ul class="feature-list">
+                                <li>Establishes personal verification questions during account setup</li>
+                                <li>Stores answers securely for future verification</li>
+                                <li>Provides an alternative authentication method</li>
+                                <li>Helps verify identity during password resets</li>
+                                <li>Creates an additional security layer beyond passwords</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Key Advantages</h4>
+                            <ul class="feature-list">
+                                <li>Enables secure account recovery when passwords are forgotten</li>
+                                <li>Adds an extra verification layer to prevent unauthorized access</li>
+                                <li>Provides a familiar, easy-to-use security method</li>
+                                <li>Reduces dependency on email-only recovery methods</li>
+                                <li>Helps protect against social engineering attacks</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 600; margin-bottom: 0.5rem;">Best Practices</h4>
+                            <ul class="feature-list">
+                                <li>Choose questions with answers only you would know</li>
+                                <li>Avoid questions with answers that can be found on social media</li>
+                                <li>Consider using slightly modified answers for enhanced security</li>
+                                <li>Don't use the same security questions across multiple accounts</li>
+                                <li>Update security questions periodically, especially after major life changes</li>
+                            </ul>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="badge" style="background: rgba(90, 103, 216, 0.1); color: #5a67d8;">Account Recovery</span>
+                        
+                        </div>
+                    </div>
+
+                    <!-- Comprehensive Quiz -->
+                    <div class="quiz-container">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-bullseye"></i> Comprehensive Security Quiz</h3>
+                            <p class="card-description">Test your cybersecurity knowledge with our 10-question assessment</p>
+                        </div>
+
+                        <div id="quiz-questions">
+                            <!-- Quiz questions will be populated by JavaScript -->
+                        </div>
+
+                        <div id="quiz-results" class="quiz-results hidden">
+                            <div class="quiz-score">🎉</div>
+                            <h3>Excellent Work!</h3>
+                            <p>Your Score: <span id="final-score">0/10</span></p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="score-progress"></div>
+                            </div>
+                            <p id="score-message"></p>
+                            <div style="padding: 1rem; background: rgba(102, 126, 234, 0.1); border-radius: 0.5rem; margin: 1rem 0;">
+                                <h4 style="margin-bottom: 0.5rem;">Security Certification</h4>
+                                <p style="font-size: 0.875rem; color: var(--muted-text);">
+                                    Complete all security modules and achieve a score of 80% or higher to earn your CyberGuard Security Awareness Certificate.
+                                </p>
+                            </div>
+                            <button class="btn btn-primary" onclick="resetQuiz()">Take Quiz Again</button>
+                        </div>
+
+                        <button class="btn btn-primary btn-full" id="submit-quiz" onclick="submitQuiz()" style="display: none;">
+                            Submit Quiz
+                        </button>
+                    </div>
+                </div>
+
+                <div class="content-section" id="security-question-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-cog"></i> Update Security Question</h3>
+                            <p class="card-description">Change your security question for password recovery</p>
+                        </div>
+                        <form method="POST" action="{{ url_for('auth.update_security_question') }}">
+                            <div class="form-group">
+                                <label class="form-label" for="security-question-select">Choose new security question</label>
+                                <select class="form-select" id="security-question-select" name="security_question" required>
+                                    <option value="">Select a security question</option>
+                                    <option value="pet_name">What was the name of your first pet?</option>
+                                    <option value="birth_city">In which city were you born?</option>
+                                    <option value="school_name">What was the name of your elementary school?</option>
+                                    <option value="mother_maiden">What is your mother's maiden name?</option>
+                                    <option value="first_car">What was your first car model?</option>
+                                    <option value="favorite_book">What is your favorite book?</option>
+                                    <option value="childhood_friend">What was the name of your childhood best friend?</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="security-answer">Your answer</label>
+                                <input type="text" class="form-input" name="security_answer" id="security-answer" placeholder="Enter your answer" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-full">
+                                <i class="fas fa-cog"></i> Update Security Question
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div class="content-section" id="profile-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-user"></i> Update Profile</h3>
+                            <p class="card-description">Change your username or email address</p>
+                        </div>
+                        <form method="POST" action="{{ url_for('auth.update_profile') }}">
+                            <div class="form-group">
+                                <label class="form-label" for="profile-username">Username</label>
+                                <input type="text" class="form-input" name="username" id="profile-username" value="{{ current_user.username }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="profile-email">Email</label>
+                                <input type="email" class="form-input" name="email" id="profile-email" value="{{ current_user.email }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-full">
+                                <i class="fas fa-save"></i> Update Profile
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Questions Data
+        const quizQuestions = [
+            {
+                question: "What is the primary purpose of URL scanning in cybersecurity?",
+                options: ["Speed optimization", "Malware detection and threat analysis", "SEO improvement", "Content analysis"],
+                correct: 1,
+                explanation: "URL scanning identifies malicious websites, phishing attempts, and malware distribution sites before users visit them, protecting you from various online threats."
+            },
+            {
+                question: "Which of these is a common indicator of a phishing email?",
+                options: ["Professional formatting", "Urgent action required with threats", "Company logo present", "Proper grammar"],
+                correct: 1,
+                explanation: "Phishing emails often create urgency and threaten consequences to pressure victims into quick actions without thinking critically."
+            },
+            {
+                question: "What does encryption do to protect your data?",
+                options: ["Deletes it permanently", "Compresses file size", "Scrambles it into unreadable format", "Creates backups"],
+                correct: 2,
+                explanation: "Encryption converts readable data into an encoded format that can only be decoded with the correct key, making it unreadable to unauthorized parties."
+            },
+            {
+                question: "What is the most secure type of password?",
+                options: ["Your birthday", "A long passphrase with mixed characters", "Your pet's name", "123456789"],
+                correct: 1,
+                explanation: "Long passphrases with mixed characters (letters, numbers, symbols) provide the strongest protection against brute force attacks."
+            },
+            {
+                question: "How often should you update your security software?",
+                options: ["Once a year", "When you remember", "Automatically as updates are available", "Never"],
+                correct: 2,
+                explanation: "Automatic updates ensure you have the latest security patches and threat definitions to protect against newly discovered vulnerabilities."
+            },
+            {
+                question: "What is a fake login detector used for?",
+                options: ["Detecting unauthorized login attempts", "Identifying phishing websites that mimic legitimate login pages", "Blocking login attempts from certain countries", "Speeding up the login process"],
+                correct: 1,
+                explanation: "Fake login detectors analyze web pages to identify those designed to mimic legitimate sites in order to steal credentials through visual and technical analysis."
+            },
+            {
+                question: "Which of these is NOT a common email security threat?",
+                options: ["Phishing", "Malware attachments", "Large file sizes", "Business Email Compromise (BEC)"],
+                correct: 2,
+                explanation: "While large file sizes might cause delivery issues, they aren't security threats. Phishing, malware attachments, and BEC are all significant email security concerns."
+            },
+            {
+                question: "What should you do if you suspect a URL is malicious?",
+                options: ["Click it in incognito mode", "Scan it with a URL security tool before visiting", "Change your password after visiting", "Share it with friends to confirm"],
+                correct: 1,
+                explanation: "Always scan suspicious URLs before visiting them. Never click unknown links or share them with others, as this could spread malware or phishing attacks."
+            },
+            {
+                question: "What is the purpose of a security question?",
+                options: ["To make logging in more difficult", "To provide an additional authentication factor for account recovery", "To collect marketing data", "To test user memory"],
+                correct: 1,
+                explanation: "Security questions provide an additional layer of verification when recovering accounts or resetting passwords, helping prevent unauthorized access."
+            },
+            {
+                question: "Which encryption method is generally considered most secure for sensitive data?",
+                options: ["Base64 encoding", "ROT13 cipher", "AES-256 encryption", "Simple password protection"],
+                correct: 2,
+                explanation: "AES-256 (Advanced Encryption Standard with 256-bit key length) is a widely trusted encryption standard used by governments and security professionals worldwide."
+            }
+        ];
+
+        // Dashboard Images Data
+        const dashboardImages = [
+            {
+                url: "https://images.unsplash.com/photo-1563206767-5b18f218e8de?ixlib=rb-4.0.3&auto=format&fit=crop&w=2069&q=80",
+                title: "Advanced Threat Detection",
+                description: "Protect your digital assets with AI-powered security analysis"
+            },
+            {
+                url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+                title: "Real-time Monitoring",
+                description: "24/7 surveillance of your security infrastructure"
+            },
+            {
+                url: "https://images.unsplash.com/photo-1551808525-51a94da548ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+                title: "Comprehensive Reports",
+                description: "Detailed insights and actionable security recommendations"
+            }
+        ];
+
+        // Global Variables
+        let currentImageIndex = 0;
+        let selectedAnswers = [];
+        let quizScore = 0;
+        let isDarkMode = false;
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeNavigation();
+            initializeThemeToggle();
+            initializeSidebarToggle();
+            initializeImageCarousel();
+            initializeQuiz();
+            loadUserProfile();
+            
+            // Check if we should show email analyzer section
+            if (window.location.pathname.includes('email_analyzer') || document.querySelector('#email-analyzer-section.active')) {
+                showSection('email-analyzer');
+            }
+        });
+
+        // Navigation Functions
+        function initializeNavigation() {
+            const menuItems = document.querySelectorAll('.menu-item');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    showSection(section);
+                });
+            });
+        }
+
+        function showSection(sectionName) {
+            const menuItems = document.querySelectorAll('.menu-item');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            // Update active menu item
+            menuItems.forEach(mi => mi.classList.remove('active'));
+            const activeMenuItem = document.querySelector(`[data-section="${sectionName}"]`);
+            if (activeMenuItem) {
+                activeMenuItem.classList.add('active');
+            }
+
+            // Show corresponding content section
+            contentSections.forEach(cs => cs.classList.remove('active'));
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.classList.add('fade-in');
+            }
+        }
+
+        // Sidebar Toggle
+        function initializeSidebarToggle() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                
+                // Update icon
+                const icon = this.querySelector('i');
+                if (sidebar.classList.contains('collapsed')) {
+                    icon.className = 'fas fa-chevron-right';
+                } else {
+                    icon.className = 'fas fa-bars';
+                }
+            });
+
+            // Mobile sidebar toggle
+            if (window.innerWidth <= 768) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('open');
+                });
+            }
+        }
+
+        // Theme Toggle
+        function initializeThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('i');
+
+            themeToggle.addEventListener('click', function() {
+                isDarkMode = !isDarkMode;
+                document.body.classList.toggle('dark', isDarkMode);
+                
+                if (isDarkMode) {
+                    themeIcon.className = 'fas fa-sun';
+                } else {
+                    themeIcon.className = 'fas fa-moon';
+                }
+            });
+        }
+
+        // Image Carousel
+        function initializeImageCarousel() {
+            const carouselImage = document.getElementById('carouselImage');
+            const carouselTitle = document.getElementById('carouselTitle');
+            const carouselDescription = document.getElementById('carouselDescription');
+            const carouselDots = document.querySelectorAll('.carousel-dot');
+
+            function updateCarousel() {
+                const currentImage = dashboardImages[currentImageIndex];
+                carouselImage.src = currentImage.url;
+                carouselTitle.textContent = currentImage.title;
+                carouselDescription.textContent = currentImage.description;
+
+                // Update dots
+                carouselDots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentImageIndex);
+                });
+            }
+
+            function nextImage() {
+                currentImageIndex = (currentImageIndex + 1) % dashboardImages.length;
+                updateCarousel();
+            }
+
+            // Auto-rotate images every 5 seconds
+            setInterval(nextImage, 5000);
+
+            // Initialize first image
+            updateCarousel();
+        }
+
+        // Quiz Functions
+        function initializeQuiz() {
+            const quizContainer = document.getElementById('quiz-questions');
+            selectedAnswers = new Array(quizQuestions.length).fill(-1);
+
+            quizQuestions.forEach((question, qIndex) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'quiz-question';
+                questionDiv.innerHTML = `
+                    <h4>${qIndex + 1}. ${question.question}</h4>
+                    <div class="quiz-options">
+                        ${question.options.map((option, oIndex) => `
+                            <div class="quiz-option" data-question="${qIndex}" data-option="${oIndex}">
+                                ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="quiz-explanation hidden" id="explanation-${qIndex}">
+                        <strong>Explanation:</strong> ${question.explanation}
+                    </div>
+                `;
+                quizContainer.appendChild(questionDiv);
+            });
+
+            // Add click handlers to quiz options
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const questionIndex = parseInt(this.getAttribute('data-question'));
+                    const optionIndex = parseInt(this.getAttribute('data-option'));
+                    
+                    // Remove previous selections for this question
+                    const questionOptions = document.querySelectorAll(`[data-question="${questionIndex}"]`);
+                    questionOptions.forEach(opt => {
+                        opt.classList.remove('selected', 'correct', 'incorrect');
+                    });
+
+                    // Mark this option as selected
+                    this.classList.add('selected');
+                    selectedAnswers[questionIndex] = optionIndex;
+
+                    // Show explanation
+                    const explanation = document.getElementById(`explanation-${questionIndex}`);
+                    explanation.classList.remove('hidden');
+
+                    // Mark correct/incorrect
+                    if (optionIndex === quizQuestions[questionIndex].correct) {
+                        this.classList.add('correct');
+                    } else {
+                        this.classList.add('incorrect');
+                        // Also highlight the correct answer
+                        questionOptions[quizQuestions[questionIndex].correct].classList.add('correct');
+                    }
+
+                    // Auto-scroll to next question
+                    setTimeout(() => {
+                        if (questionIndex < quizQuestions.length - 1) {
+                            const nextQuestion = document.querySelectorAll('.quiz-question')[questionIndex + 1];
+                            nextQuestion.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 500);
+
+                    // Check if all questions are answered
+                    checkQuizCompletion();
+                });
+            });
+        }
+
+        function checkQuizCompletion() {
+            const answeredQuestions = selectedAnswers.filter(answer => answer !== -1).length;
+            const submitButton = document.getElementById('submit-quiz');
+            
+            if (answeredQuestions === quizQuestions.length) {
+                submitButton.style.display = 'block';
+            }
+        }
+
+        function submitQuiz() {
+            // Calculate score
+            quizScore = 0;
+            selectedAnswers.forEach((answer, index) => {
+                if (answer === quizQuestions[index].correct) {
+                    quizScore++;
+                }
+            });
+
+            // Hide quiz questions and show results
+            document.getElementById('quiz-questions').style.display = 'none';
+            document.getElementById('submit-quiz').style.display = 'none';
+            document.getElementById('quiz-results').classList.remove('hidden');
+
+            // Update results
+            document.getElementById('final-score').textContent = `${quizScore}/${quizQuestions.length}`;
+            const percentage = (quizScore / quizQuestions.length) * 100;
+            document.getElementById('score-progress').style.width = percentage + '%';
+
+            // Set score message
+            const scoreMessage = document.getElementById('score-message');
+            if (quizScore === quizQuestions.length) {
+                scoreMessage.textContent = "Perfect! You're a cybersecurity expert! 🏆";
+            } else if (quizScore >= quizQuestions.length * 0.8) {
+                scoreMessage.textContent = "Great job! You have strong security knowledge! 🥈";
+            } else if (quizScore >= quizQuestions.length * 0.6) {
+                scoreMessage.textContent = "Good work! You're on your way to becoming a security pro! 🥉";
+            } else if (quizScore >= quizQuestions.length * 0.4) {
+                scoreMessage.textContent = "Not bad! Keep learning to improve your security awareness.";
+            } else {
+                scoreMessage.textContent = "Review the materials and try again to strengthen your security knowledge! 📚";
+            }
+        }
+
+        function resetQuiz() {
+            selectedAnswers = new Array(quizQuestions.length).fill(-1);
+            quizScore = 0;
+
+            // Reset all quiz options
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+
+            // Hide all explanations
+            document.querySelectorAll('.quiz-explanation').forEach(explanation => {
+                explanation.classList.add('hidden');
+            });
+
+            // Show quiz questions and hide results
+            document.getElementById('quiz-questions').style.display = 'block';
+            document.getElementById('submit-quiz').style.display = 'none';
+            document.getElementById('quiz-results').classList.add('hidden');
+
+            // Scroll to top of quiz
+            document.getElementById('quiz-questions').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // User Profile Functions
+        function loadUserProfile() {
+            // Profile data will be populated by the backend template
+            const usernameElement = document.getElementById('profile-username');
+            if (usernameElement && !usernameElement.value) {
+                usernameElement.value = "{{ username }}";
+            }
+        }
+
+        // Utility Functions
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                background: var(--card-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                animation: slideInRight 0.3s ease-out;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Add notification animations to CSS
+        const notificationStyles = document.createElement('style');
+        notificationStyles.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+
+            .notification-success {
+                border-left: 4px solid #48bb78;
+                background: rgba(72, 187, 120, 0.1);
+                color: #2f855a;
+            }
+
+            .notification-warning {
+                border-left: 4px solid #ed8936;
+                background: rgba(237, 137, 54, 0.1);
+                color: #c05621;
+            }
+
+            .notification-error {
+                border-left: 4px solid #f56565;
+                background: rgba(245, 101, 101, 0.1);
+                color: #c53030;
+            }
+
+            .notification-info {
+                border-left: 4px solid #4299e1;
+                background: rgba(66, 153, 225, 0.1);
+                color: #2b6cb0;
+            }
+        `;
+        document.head.appendChild(notificationStyles);
+
+        // Add form submission handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // URL Scanner form
+            const urlForm = document.querySelector('#scan-url-section .btn-primary');
+            if (urlForm) {
+                urlForm.addEventListener('click', function() {
+                    const url = document.getElementById('url-input').value;
+                    if (url) {
+                        showNotification('URL scan initiated for: ' + url, 'info');
+                    } else {
+                        showNotification('Please enter a URL to scan', 'warning');
+                    }
+                });
+            }
+
+            document.querySelector('#scan-url-section button').addEventListener('click', async function() {
+                const url = document.querySelector('#url-input').value;
+                if (!url) {
+                    alert('Please enter a URL to scan');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/scan-url', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `url=${encodeURIComponent(url)}`
+                    });
+                    
+                    const result = await response.json();
+                    
+                    // Display results to user
+                    if (result.error) {
+                        alert(`Scan failed: ${result.error}`);
+                    } else {
+                        // Format and display the results nicely
+                        let message = `URL Scan Results:\n\n`;
+                        message += `URL: ${result.url}\n`;
+                        message += `Domain: ${result.domain}\n`;
+                        message += `Status: ${result.status_code}\n`;
+                        message += `Final URL: ${result.final_url}\n\n`;
+                        
+                        if (result.is_suspicious) {
+                            message += `⚠️ WARNING: This URL appears suspicious!\n`;
+                        }
+                        
+                        if (result.ssl_error) {
+                            message += `🔒 SSL Warning: Certificate verification failed\n`;
+                        }
+                        
+                        if (result.is_login_page) {
+                            message += `🔑 This appears to be a login page\n`;
+                            if (result.login_page_analysis.is_phishing) {
+                                message += `🚨 PHISHING WARNING: This login page shows signs of being a phishing site!\n`;
+                                message += `Reasons:\n- ${result.login_page_analysis.phishing_signs.join('\n- ')}\n`;
+                            }
+                        }
+                        
+                        if (result.malicious_scripts_found) {
+                            message += `⚠️ MALICIOUS CODE: Found potentially dangerous scripts:\n`;
+                            message += `- ${result.malicious_scripts_found.join('\n- ')}\n`;
+                        }
+                        
+                        alert(message);
+                    }
+                } catch (error) {
+                    alert('Error scanning URL: ' + error.message);
+                }
+            });
+
+// Real-time updates
+function updateDashboardStats() {
+    fetch('/api/user-metrics')
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector('.stat-content h3:nth-child(1)').textContent = data.security_score + '%';
+            document.querySelector('.stat-content h3:nth-child(2)').textContent = data.scans_today;
+            document.querySelector('.stat-content h3:nth-child(3)').textContent = data.threats_blocked;
+            
+            const statusElement = document.querySelector('.stat-content h3:nth-child(4)');
+            statusElement.textContent = data.security_score > 70 ? 'Secure' : 
+                                      data.security_score > 40 ? 'Warning' : 'Danger';
+            statusElement.style.color = data.security_score > 70 ? '#48bb78' : 
+                                      data.security_score > 40 ? '#ed8936' : '#f56565';
+        });
+}
+
+// Update every 30 seconds
+setInterval(updateDashboardStats, 30000);
+
+// Also update when switching sections
+document.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('click', updateDashboardStats);
+});
+            document.getElementById('check-login-btn').addEventListener('click', function() {
+                const url = document.getElementById('login-url').value;
+                const resultsDiv = document.getElementById('detection-results');
+                const resultAlert = document.getElementById('result-alert');
+                const resultTitle = document.getElementById('result-title');
+                const resultDetails = document.getElementById('result-details');
+                
+                if (!url) {
+                    alert('Please enter a URL to check');
+                    return;
+                }
+                
+                // Show loading state
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+                this.disabled = true;
+                
+                fetch('/check-login-page', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `url=${encodeURIComponent(url)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Reset button
+                    this.innerHTML = '<i class="fas fa-eye"></i> Check Login Page';
+                    this.disabled = false;
+                    
+                    // Show results
+                    resultsDiv.style.display = 'block';
+                    
+                    if (data.error) {
+                        resultAlert.className = 'alert alert-danger';
+                        resultTitle.textContent = 'Error';
+                        resultDetails.innerHTML = `<p>${data.error}</p>`;
+                        return;
+                    }
+                    
+                    if (data.is_phishing) {
+                        resultAlert.className = 'alert alert-danger';
+                        resultTitle.textContent = '⚠️ Suspicious Login Page Detected';
+                    } else {
+                        resultAlert.className = 'alert alert-success';
+                        resultTitle.textContent = '✅ No Immediate Threats Detected';
+                    }
+                    
+                    let detailsHtml = `<p>Final URL: ${data.final_url || url}</p>`;
+                    
+                    if (data.phishing_signs && data.phishing_signs.length > 0) {
+                        detailsHtml += '<h5>Potential Issues Found:</h5><ul>';
+                        data.phishing_signs.forEach(sign => {
+                            detailsHtml += `<li>${sign}</li>`;
+                        });
+                        detailsHtml += '</ul>';
+                    } else {
+                        detailsHtml += '<p>No obvious phishing indicators found.</p>';
+                    }
+                    
+                    resultDetails.innerHTML = detailsHtml;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.innerHTML = '<i class="fas fa-eye"></i> Check Login Page';
+                    this.disabled = false;
+                    
+                    resultsDiv.style.display = 'block';
+                    resultAlert.className = 'alert alert-danger';
+                    resultTitle.textContent = 'Error';
+                    resultDetails.innerHTML = `<p>Failed to analyze the page: ${error.message}</p>`;
+                });
+            });
+
+            // Encryption form handlers
+            const uploadEncryptBtn = document.getElementById('upload-encrypt-btn');
+            const decryptBtn = document.getElementById('decrypt-btn');
+
+            if (uploadEncryptBtn) {
+                uploadEncryptBtn.addEventListener('click', function() {
+                    const text = document.getElementById('text-input').value;
+                    const file = document.getElementById('file-input').files[0];
+                    const key = document.getElementById('encryption-key').value;
+                    
+                    if ((text || file) && key) {
+                        if (file) {
+                            showNotification(`File "${file.name}" uploaded and encrypted successfully`, 'success');
+                        } else {
+                            showNotification('Text encrypted successfully', 'success');
+                        }
+                    } else {
+                        showNotification('Please enter text or upload a file, and provide an encryption key', 'warning');
+                    }
+                });
+            }
+
+            if (decryptBtn) {
+                decryptBtn.addEventListener('click', function() {
+                    const form = document.querySelector('#encryption-section form');
+                    form.action = "{{ url_for('auth.decrypt_tool') }}";
+                    form.submit();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | CyberGuard Suite</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(30, 60, 114, 0.9) 0%, rgba(42, 67, 101, 0.9) 100%), 
+                        url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=2025&q=80') center/cover;
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+            padding: 2rem 0;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 480px;
+            padding: 2.5rem;
+            margin: 1rem;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.8s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        .logo svg {
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+            z-index: 1;
+            position: relative;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin: 0.5rem 0;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .flash-message {
+            padding: 12px 16px;
+            margin-bottom: 1.25rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .flash-danger {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            color: #c62828;
+            border-left: 4px solid #c62828;
+        }
+
+        .flash-success {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #2e7d32;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            animation: fadeIn 0.6s ease-out;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.4s; }
+        .form-group:nth-child(2) { animation-delay: 0.5s; }
+        .form-group:nth-child(3) { animation-delay: 0.6s; }
+        .form-group:nth-child(4) { animation-delay: 0.7s; }
+        .form-group:nth-child(5) { animation-delay: 0.8s; }
+        .form-group:nth-child(6) { animation-delay: 0.9s; }
+
+        label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            transition: color 0.3s ease;
+            z-index: 2;
+        }
+
+        .input-container:focus-within .input-icon {
+            color: #667eea;
+        }
+
+        input[type="email"], input[type="password"], input[type="text"], select {
+            width: 100%;
+            padding: 14px 12px 14px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        input[type="email"]:focus, input[type="password"]:focus, input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        input[type="email"]:hover, input[type="password"]:hover, input[type="text"]:hover, select:hover {
+            border-color: #bdc3c7;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-container input {
+            padding-right: 45px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+            z-index: 2;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .toggle-password:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        /* Enhanced Password Strength Checker */
+        .password-strength {
+            margin-top: 0.75rem;
+            position: relative;
+        }
+
+        .password-strength-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .password-strength-container.active {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .strength-bars {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .strength-bar {
+            height: 6px;
+            flex: 1;
+            background: #e9ecef;
+            border-radius: 3px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .strength-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .strength-bar.active::before {
+            left: 100%;
+        }
+
+        .strength-bar.filled {
+            animation: fillBar 0.4s ease-out;
+        }
+
+        .strength-bar.weak { background: linear-gradient(135deg, #ff6b6b, #ee5a52); }
+        .strength-bar.fair { background: linear-gradient(135deg, #ffa726, #ff9800); }
+        .strength-bar.good { background: linear-gradient(135deg, #66bb6a, #4caf50); }
+        .strength-bar.strong { background: linear-gradient(135deg, #42a5f5, #2196f3); }
+        .strength-bar.excellent { background: linear-gradient(135deg, #ab47bc, #9c27b0); }
+
+        .strength-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+
+        .strength-label {
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .strength-label.weak { color: #e74c3c; }
+        .strength-label.fair { color: #f39c12; }
+        .strength-label.good { color: #27ae60; }
+        .strength-label.strong { color: #3498db; }
+        .strength-label.excellent { color: #9b59b6; }
+
+        .strength-percentage {
+            font-size: 0.75rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .strength-requirements {
+            font-size: 0.75rem;
+            color: #6c757d;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 2px 0;
+            transition: all 0.3s ease;
+        }
+
+        .requirement.met {
+            color: #27ae60;
+            animation: checkMark 0.3s ease-out;
+        }
+
+        .requirement-icon {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 8px;
+        }
+
+        .requirement.met .requirement-icon {
+            background: #27ae60;
+            border-color: #27ae60;
+            color: white;
+        }
+
+        .password-match {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .match-success { 
+            color: #27ae60;
+            animation: slideInSuccess 0.3s ease-out;
+        }
+        
+        .match-error { 
+            color: #e74c3c;
+            animation: slideInError 0.3s ease-out;
+        }
+
+        .register-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .register-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .register-button:active {
+            transform: translateY(0);
+        }
+
+        .register-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .register-button:hover::before {
+            left: 100%;
+        }
+
+        .login-link {
+            text-align: center;
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            margin-top: 1.5rem;
+            animation: fadeIn 0.6s ease-out 1.2s both;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #764ba2;
+        }
+
+        .security-tip {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(224, 224, 224, 0.5);
+            text-align: center;
+            animation: fadeIn 0.6s ease-out 1.4s both;
+        }
+
+        .security-tip p {
+            font-size: 0.8rem;
+            color: #95a5a6;
+            margin: 0.25rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .security-tip svg {
+            flex-shrink: 0;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-10px) rotate(1deg);
+            }
+            66% {
+                transform: translateY(-5px) rotate(-1deg);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+            50% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
+            100% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+        }
+
+        @keyframes fillBar {
+            0% {
+                transform: scaleX(0);
+                transform-origin: left;
+            }
+            100% {
+                transform: scaleX(1);
+                transform-origin: left;
+            }
+        }
+
+        @keyframes checkMark {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInSuccess {
+            0% {
+                transform: translateX(-10px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInError {
+            0% {
+                transform: translateX(10px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .register-container {
+                margin: 0.5rem;
+                padding: 2rem;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .logo {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo-container">
+            <div class="logo">
+                <!-- Custom Advanced CyberGuard Suite Icon -->
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Shield Base -->
+                    <path d="M20 2L6 8V18C6 26.5 11.5 34.26 20 36C28.5 34.26 34 26.5 34 18V8L20 2Z" 
+                          fill="currentColor" fill-opacity="0.9"/>
+                    
+                    <!-- Inner Shield -->
+                    <path d="M20 5L9 9.5V17.5C9 24.5 13.5 30.5 20 32C26.5 30.5 31 24.5 31 17.5V9.5L20 5Z" 
+                          fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"/>
+                    
+                    <!-- Central Lock -->
+                    <rect x="16" y="15" width="8" height="6" rx="1" 
+                          fill="rgba(255,255,255,0.9)" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+                    <path d="M18 15V13C18 11.9 18.9 11 20 11C21.1 11 22 11.9 22 13V15" 
+                          stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none"/>
+                    
+                    <!-- Network Nodes -->
+                    <circle cx="12" cy="12" r="1.5" fill="rgba(255,255,255,0.8)"/>
+                    <circle cx="28" cy="12" r="1.5" fill="rgba(255,255,255,0.8)"/>
+                    <circle cx="12" cy="24" r="1.5" fill="rgba(255,255,255,0.8)"/>
+                    <circle cx="28" cy="24" r="1.5" fill="rgba(255,255,255,0.8)"/>
+                    
+                    <!-- Connection Lines -->
+                    <line x1="13.2" y1="13.2" x2="18" y2="16" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+                    <line x1="26.8" y1="13.2" x2="22" y2="16" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+                    <line x1="13.2" y1="22.8" x2="18" y2="20" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+                    <line x1="26.8" y1="22.8" x2="22" y2="20" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
+                    
+                    <!-- Scanning Radar Effect -->
+                    <circle cx="20" cy="18" r="10" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+                    <circle cx="20" cy="18" r="7" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+                    
+                    <!-- Digital Elements -->
+                    <rect x="10" y="26" width="2" height="1" fill="rgba(255,255,255,0.7)"/>
+                    <rect x="13" y="26" width="1" height="1" fill="rgba(255,255,255,0.7)"/>
+                    <rect x="15" y="26" width="2" height="1" fill="rgba(255,255,255,0.7)"/>
+                    
+                    <rect x="23" y="26" width="1" height="1" fill="rgba(255,255,255,0.7)"/>
+                    <rect x="25" y="26" width="2" height="1" fill="rgba(255,255,255,0.7)"/>
+                    <rect x="28" y="26" width="2" height="1" fill="rgba(255,255,255,0.7)"/>
+                    
+                    <!-- Security Eye -->
+                    <ellipse cx="20" cy="10" rx="2" ry="1" fill="rgba(255,255,255,0.8)"/>
+                    <circle cx="20" cy="10" r="0.5" fill="rgba(102,126,234,0.8)"/>
+                </svg>
+            </div>
+            <h1>Join CyberGuard</h1>
+            <p class="subtitle">Create your secure account today</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" id="registerForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-container">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <input type="text" name="username" id="username" required placeholder="Choose a username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-container">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <input type="email" name="email" id="email" required placeholder="your@email.com">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-container">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    <div class="password-container">
+                        <input type="password" name="password" id="password" required placeholder="Create a strong password">
+                        <span class="toggle-password" onclick="togglePassword('password')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <div class="password-strength" id="passwordStrength" style="display: none;">
+                    <div class="password-strength-container" id="strengthContainer">
+                        <div class="strength-text">
+                            <span class="strength-label" id="strengthLabel">Password Strength</span>
+                            <span class="strength-percentage" id="strengthPercentage">0%</span>
+                        </div>
+                        <div class="strength-bars">
+                            <div class="strength-bar" id="bar1"></div>
+                            <div class="strength-bar" id="bar2"></div>
+                            <div class="strength-bar" id="bar3"></div>
+                            <div class="strength-bar" id="bar4"></div>
+                            <div class="strength-bar" id="bar5"></div>
+                        </div>
+                        <div class="strength-requirements">
+                            <div class="requirement" id="req-length">
+                                <div class="requirement-icon">✓</div>
+                                <span>At least 8 characters</span>
+                            </div>
+                            <div class="requirement" id="req-lowercase">
+                                <div class="requirement-icon">✓</div>
+                                <span>Lowercase letter</span>
+                            </div>
+                            <div class="requirement" id="req-uppercase">
+                                <div class="requirement-icon">✓</div>
+                                <span>Uppercase letter</span>
+                            </div>
+                            <div class="requirement" id="req-number">
+                                <div class="requirement-icon">✓</div>
+                                <span>Number</span>
+                            </div>
+                            <div class="requirement" id="req-special">
+                                <div class="requirement-icon">✓</div>
+                                <span>Special character</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <div class="input-container">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 15v2m-6 4h12a2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        <path d="M9 12l2 2 4-4"/>
+                    </svg>
+                    <div class="password-container">
+                        <input type="password" name="confirm_password" id="confirm_password" required placeholder="Confirm your password">
+                        <span class="toggle-password" onclick="togglePassword('confirm_password')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <div class="password-match" id="passwordMatch"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="security_question">Security Question</label>
+                <div class="input-container">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <select name="security_question" id="security_question" required>
+                        <option value="">Choose a security question</option>
+                        <option value="pet_name">What was the name of your first pet?</option>
+                        <option value="birth_city">In which city were you born?</option>
+                        <option value="school_name">What was the name of your elementary school?</option>
+                        <option value="mother_maiden">What is your mother's maiden name?</option>
+                        <option value="first_car">What was your first car model?</option>
+                        <option value="favorite_book">What is your favorite book?</option>
+                        <option value="childhood_friend">What was the name of your childhood best friend?</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="security_answer">Security Answer</label>
+                <div class="input-container">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                    </svg>
+                    <input type="text" name="security_answer" id="security_answer" required placeholder="Enter your answer">
+                </div>
+            </div>
+            
+            <button type="submit" class="register-button">Create Account</button>
+        </form>
+
+        <div class="login-link">
+            <p>
+                Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a>
+            </p>
+        </div>
+
+        <div class="security-tip">
+            <p>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>
+                    <strong>Security:</strong> Your data is encrypted and protected with industry-standard security
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggleIcon = passwordField.parentElement.querySelector('.toggle-password svg');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        }
+
+        // Enhanced Password strength checker
+        function checkPasswordStrength(password) {
+            const strengthContainer = document.getElementById('strengthContainer');
+            const strengthLabel = document.getElementById('strengthLabel');
+            const strengthPercentage = document.getElementById('strengthPercentage');
+            const passwordStrength = document.getElementById('passwordStrength');
+            
+            // Show/hide strength checker
+            if (password.length > 0) {
+                passwordStrength.style.display = 'block';
+                strengthContainer.classList.add('active');
+            } else {
+                passwordStrength.style.display = 'none';
+                return;
+            }
+
+            // Check requirements
+            const requirements = {
+                length: password.length >= 8,
+                lowercase: /[a-z]/.test(password),
+                uppercase: /[A-Z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[^A-Za-z0-9]/.test(password)
+            };
+
+            // Update requirement indicators
+            Object.keys(requirements).forEach(req => {
+                const element = document.getElementById(`req-${req}`);
+                if (requirements[req]) {
+                    element.classList.add('met');
+                } else {
+                    element.classList.remove('met');
+                }
+            });
+
+            // Calculate strength
+            const metRequirements = Object.values(requirements).filter(Boolean).length;
+            const strengthScore = metRequirements;
+            const percentage = Math.round((strengthScore / 5) * 100);
+
+            // Update percentage
+            strengthPercentage.textContent = percentage + '%';
+
+            // Reset all bars
+            const bars = document.querySelectorAll('.strength-bar');
+            bars.forEach(bar => {
+                bar.className = 'strength-bar';
+            });
+
+            // Update bars and label based on strength
+            let strengthClass = '';
+            let strengthText = '';
+
+            if (strengthScore <= 1) {
+                strengthClass = 'weak';
+                strengthText = 'Very Weak';
+                bars[0].classList.add('filled', 'weak');
+            } else if (strengthScore === 2) {
+                strengthClass = 'weak';
+                strengthText = 'Weak';
+                bars[0].classList.add('filled', 'weak');
+                bars[1].classList.add('filled', 'weak');
+            } else if (strengthScore === 3) {
+                strengthClass = 'fair';
+                strengthText = 'Fair';
+                bars[0].classList.add('filled', 'fair');
+                bars[1].classList.add('filled', 'fair');
+                bars[2].classList.add('filled', 'fair');
+            } else if (strengthScore === 4) {
+                strengthClass = 'good';
+                strengthText = 'Good';
+                bars[0].classList.add('filled', 'good');
+                bars[1].classList.add('filled', 'good');
+                bars[2].classList.add('filled', 'good');
+                bars[3].classList.add('filled', 'good');
+            } else if (strengthScore === 5) {
+                strengthClass = 'strong';
+                strengthText = 'Strong';
+                bars.forEach(bar => bar.classList.add('filled', 'strong'));
+            }
+
+            // Update label
+            strengthLabel.textContent = strengthText;
+            strengthLabel.className = `strength-label ${strengthClass}`;
+
+            // Add shimmer effect to filled bars
+            setTimeout(() => {
+                bars.forEach(bar => {
+                    if (bar.classList.contains('filled')) {
+                        bar.classList.add('active');
+                    }
+                });
+            }, 100);
+        }
+
+        // Password match checker
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            const matchDiv = document.getElementById('passwordMatch');
+            
+            if (confirmPassword === '') {
+                matchDiv.textContent = '';
+                matchDiv.className = 'password-match';
+                return;
+            }
+            
+            if (password === confirmPassword) {
+                matchDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"></polyline></svg> Passwords match';
+                matchDiv.className = 'password-match match-success';
+            } else {
+                matchDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Passwords do not match';
+                matchDiv.className = 'password-match match-error';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('password').addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+            checkPasswordMatch();
+        });
+
+        document.getElementById('confirm_password').addEventListener('input', checkPasswordMatch);
+
+        // Form submission animation
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const button = document.querySelector('.register-button');
+            button.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; gap: 8px;"><div style="width: 20px; height: 20px; border: 2px solid #ffffff; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>Creating account...</div>';
+            button.disabled = true;
+        });
+    </script>
+</body>
+</html>
