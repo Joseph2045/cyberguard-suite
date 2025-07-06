@@ -91,10 +91,10 @@ App will be accessible at `http://localhost:5000`
 
  👨‍💻 Author
 
--name:Joseph Marcusy Kibiki
--PHone: 0618780208
+*name:Joseph Marcusy Kibiki
+*PHone: 0618780208
        0674837151
--enail:josephkibiki60@gmail.com 
+*enail:josephkibiki60@gmail.com 
 
 
 📜 License
