@@ -84,24 +84,17 @@ App will be accessible at `http://localhost:5000`
 
 * Input sanitization and validation
 * HTTPS support when deployed
-* Token-based password reset
+* Security question-based password reset
 * Secure session management (Flask-Login)
 * Uses AES encryption for data confidentiality
 
 
-📚 References
-
-* [Flask Documentation](https://flask.palletsprojects.com/)
-* [Scikit-learn](https://scikit-learn.org/)
-* [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-* [Python Cryptography](https://cryptography.io/)
-* [Render Deployment Docs](https://render.com/docs/deploy-flask)
-
  👨‍💻 Author
 
-**Joseph Marcusy Kibiki**
-BCSe-01-0084-2022
-Supervisor: Kabeya Almasi
+-name:Joseph Marcusy Kibiki
+-PHone: 0618780208
+       0674837151
+-enail:josephkibiki60@gmail.com 
 
 
 📜 License
